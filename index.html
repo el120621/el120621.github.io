@@ -7,8 +7,35 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="font-mono">
-    <main class="h-screen flex items-center justify-center">
-        <h1>eh? Nothing here.</h1>
+    <main class="h-screen flex flex-col items-center justify-center">
+        <h1>eh? Nothing <span id="here" class="cursor-pointer" >here</span>.</h1>
+        <br>
+        <div id="qr" class="leading-none"></div>
     </main>
+    <script>
+        fetch('https://6480778ff061e6ec4d495544.mockapi.io/api/v1/data')
+            .then(response => response.json())
+            .then(data => {
+            
+            const itemsArray = data[0].qr
+
+            console.log(itemsArray)
+
+            const addItemBtn = document.getElementById('here');
+            const outputDiv = document.getElementById('qr');
+
+            let currentIndex = 0;
+
+            addItemBtn.addEventListener('click', () => {
+                for (let i = 0; i < 10; i++) {
+                    if (currentIndex < itemsArray.length) {
+                    outputDiv.innerHTML += itemsArray[currentIndex];
+                    currentIndex++;
+                    }
+                }
+            });
+            
+        })
+    </script>
 </body>
 </html>
