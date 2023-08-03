@@ -4,33 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>eh?</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="font-mono">
     <main class="h-screen flex flex-col items-center justify-center">
         <h1>eh? Nothing <span id="here" class="cursor-pointer" >here</span>.</h1>
         <br>
-        <div id="qr" class="leading-none"></div>
+        <div id="qr" class="leading-none text-xs"></div>
     </main>
     <script>
         fetch('https://6480778ff061e6ec4d495544.mockapi.io/api/v1/data')
             .then(response => response.json())
             .then(data => {
             
-            const itemsArray = data[0].qr
+            const qr = data[0].qr
 
-            console.log(itemsArray)
+            const x = document.getElementById('here');
+            const y = document.getElementById('qr');
 
-            const addItemBtn = document.getElementById('here');
-            const outputDiv = document.getElementById('qr');
+            let ci = 0;
 
-            let currentIndex = 0;
-
-            addItemBtn.addEventListener('click', () => {
+            x.addEventListener('click', () => {
                 for (let i = 0; i < 10; i++) {
-                    if (currentIndex < itemsArray.length) {
-                    outputDiv.innerHTML += itemsArray[currentIndex];
-                    currentIndex++;
+                    if (ci < qr.length) {
+                    y.innerHTML += qr[ci];
+                    ci++;
                     }
                 }
             });
