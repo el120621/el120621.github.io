@@ -12,7 +12,7 @@
 </head>
 <body class="font-mono">
     <main class="h-screen flex flex-col items-center justify-center p-5">
-        <h1>eh? Nothing <span id="here" class="cursor-pointer" >here</span>.</h1>
+        <h1>eh? Nothing <span id="here" class="cursor-pointer" >here</span></h1>
         <br>
         <pre id="qr" class="leading-none tracking-normal whitespace-pre-wrap text-xs"></pre>
         <span id="s" class="block md:hidden text-center"></span>
@@ -29,6 +29,10 @@
             const m = 'YmFzYWcgYmE/IGxpcGF0IGthIHNhIHBjIGt1bmcgZ3VzdG8gbW8gbWFzY2FuIG8ga2F5YSB0YXBvbiBtbyBuYSBzZWxwb24gbW8h'
 
             let ci = 0;
+
+            setTimeout(() => {
+                document.querySelector('h1').append('?')
+            }, 3000);
 
             x.addEventListener('click', () => {
                 let done = false;
