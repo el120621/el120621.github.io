@@ -26,13 +26,19 @@
 
             const x = document.getElementById('here');
             const y = document.getElementById('qr');
-            const m = 'YmFzYWcgYmE/IGxpcGF0IGthIHNhIHBjIGt1bmcgZ3VzdG8gbW8gbWFzY2FuIG8ga2F5YSB0YXBvbiBtbyBuYSBzZWxwb24gbW8h'
-
+            const m = 'Pz8/'
+            const n = 'PGEgaHJlZj0iaHR0cHM6Ly95b3V0dS5iZS9zLXFOUjFoWV84dz90PTYiPkZydWl0IFNhbGFkIDwzPC9hPg=='
             let ci = 0;
 
             setTimeout(() => {
                 document.querySelector('h1').append('?')
             }, 3000);
+
+            if (navigator.userAgent.match(/Android/i)) {
+                return x.addEventListener('click', () =>
+                    document.getElementById('s').innerHTML = atob(n)
+                );
+            }
 
             x.addEventListener('click', () => {
                 let done = false;
@@ -46,6 +52,8 @@
             });
             
         })
+        
+ 
     </script>
 </body>
 </html>
