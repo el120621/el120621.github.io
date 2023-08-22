@@ -10,50 +10,54 @@
     <link rel="manifest" href="/site.webmanifest">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="font-mono">
-    <main class="h-screen flex flex-col items-center justify-center p-5">
-        <h1>eh? Nothing <span id="here" class="cursor-pointer" >here</span></h1>
+<body class="font-mono text-xs md:text-lg">
+    <main class="h-screen flex flex-col items-center justify-center p-2">
+        <h1 id="main-text" class="text-center"></h1>
         <br>
-        <pre id="qr" class="leading-none tracking-normal whitespace-pre-wrap text-xs"></pre>
-        <span id="s" class="block md:hidden text-center"></span>
+        <div id="chat" class="flex flex-col hidden items-center">
+            <textarea required id="message" class="w-72 md:w-96 px-4 py-2 resize-none overflow-y-hidden border h-20"></textarea>
+            <button id="send" class="w-40 px-4 py-2 bg-black text-white mt-5 mb-10" >Ask</button>
+            <div id="response" class="w-[300px] whitespace-pre-line text-justify"></div>
+        </div>
+        <button id="send-again" class="hidden w-40 px-4 py-2 bg-black text-white mt-5 mb-10">Ask Again</button>
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="100px"
+            height="100px"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="xMidYMid"
+            class="lds-spinner"
+            style="background: none;"
+            >
+            <g transform="rotate(0 50 50)">
+                <circle
+                cx="50"
+                cy="50"
+                r="20"
+                fill="none"
+                ng-attr-stroke="{{config.color}}"
+                ng-attr-stroke-width="{{config.width}}"
+                ng-attr-stroke-dasharray="{{config.dasharray}}"
+                stroke="#000"
+                stroke-width="10"
+                stroke-dasharray="31.41592653589793 31.41592653589793"
+                >
+                <animateTransform
+                    attributeName="transform"
+                    type="rotate"
+                    calcMode="linear"
+                    values="0 50 50;360 50 50"
+                    keyTimes="0;1"
+                    dur="1s"
+                    begin="0s"
+                    repeatCount="indefinite"
+                ></animateTransform>
+                </circle>
+            </g>
+        </svg>
     </main>
     <script>
-        fetch('https://6480778ff061e6ec4d495544.mockapi.io/api/v1/data')
-            .then(response => response.json())
-            .then(data => {
-            
-            const qr = data[0].qr
-
-            const x = document.getElementById('here');
-            const y = document.getElementById('qr');
-            const m = 'Pz8/'
-            const n = 'PGEgaHJlZj0iaHR0cHM6Ly95b3V0dS5iZS9zLXFOUjFoWV84dz90PTYiPkZydWl0IFNhbGFkIDwzPC9hPg=='
-            let ci = 0;
-
-            setTimeout(() => {
-                document.querySelector('h1').append('?')
-            }, 3000);
-
-            if (navigator.userAgent.match(/Android/i)) {
-                return x.addEventListener('click', () =>
-                    document.getElementById('s').innerHTML = atob(n)
-                );
-            }
-
-            x.addEventListener('click', () => {
-                let done = false;
-                for (let i = 0; i < 10; i++) {
-                    if (ci < qr.length) {
-                    y.innerHTML += qr[ci];
-                    ci++;
-                    }else done = true;
-                }
-                if (done) document.getElementById('s').innerHTML = atob(m);
-            });
-            
-        })
-        
- 
+        const ws=new WebSocket("wss://chat-bot.wxpmbqynklcnsm.repl.co"),note=e=>`You have ${e} questions to ask me about anything`,check=async()=>{let e=await fetch("https://chat-bot.wxpmbqynklcnsm.repl.co/count"),{count:n}=await e.json();return(spinner.classList.add("hidden"),n)?(promptType(note(n)),!0):(promptType("eh? Nothing here."),!1)},responseDiv=document.getElementById("response"),spinner=document.querySelector(".lds-spinner"),messageInput=document.getElementById("message"),send=document.getElementById("send"),sendAgain=document.getElementById("send-again"),chat=document.getElementById("chat");function endResponse(){sendAgain.classList.remove("hidden")}function promptType(e){let n=document.getElementById("main-text");n.textContent="";let s=0;!function t(){s<e.length&&(n.textContent+=e.charAt(s),s++,setTimeout(t,50))}()}ws.onopen=async()=>{await check()&&chat.classList.remove("hidden")},ws.onclose=async()=>{promptType("eh? Nothing here."),chat.remove(),sendAgain.remove(),spinner.classList.add("hidden")},ws.onmessage=e=>{if("END"===e.data)return endResponse();let n=e.data;responseDiv.innerHTML+=n},send.addEventListener("click",async()=>{if(!messageInput.value.trim())return;let e=messageInput.value;ws.send(e),promptType(messageInput.value),messageInput.classList.add("hidden"),send.classList.add("hidden")}),sendAgain.addEventListener("click",async()=>{sendAgain.classList.add("hidden"),spinner.classList.remove("hidden");let e=await check();responseDiv.innerHTML="",messageInput.value="",e&&messageInput.classList.remove("hidden"),e&&send.classList.remove("hidden")});const ask=["pano matulog ang mga kuba?","kelan puputi ang uwak?","kelan luluhod ang mga tala?","Bakit ang asim ng mga tao sa the camp?","Ilan ang butas ng skyflakes?","Busy ka ba?","Bakit mabaho ang tae?"],addPlaceholder=()=>messageInput.placeholder=ask[Math.floor(Math.random()*ask.length)];function adjustHeight(){this.style.height="auto",this.style.height=this.scrollHeight+"px",addPlaceholder()}messageInput.addEventListener("input",adjustHeight),addPlaceholder();
     </script>
 </body>
 </html>
