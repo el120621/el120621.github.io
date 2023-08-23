@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ball Ball</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="font-mono">
+    <main class="flex flex-col items-center justify-center h-screen">
+      <canvas
+        class="border border-1 border-gray-400"
+        id="gameCanvas"
+        width="800"
+        height="500"
+      >
+      </canvas>
+      <button class="mt-10 bg-black px-4 py-2 text-white" onclick="init()">
+        Restart
+      </button>
+    </main>
+    <script>
+      function init() {
+        // Game settings
+        const redBallCount = 10;
+        const repelForce = 0.01;
+        const boundaryRepelDistance = 50;
+        const edgePadding = 5;
+        const maxRedBallSpeed = 5;
+        const redBallDeceleration = 0.998;
+        const blueBallAcceleration = 0.25;
+        let blueBallSpeed = 1;
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Ball objects
+        const redBalls = [];
+        const blueBalls = [];
+        const greenBall = {
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          radius: 15,
+          color: "#22c55e",
+        };
+
+        // Initialize red balls
+        for (let i = 0; i < redBallCount; i++) {
+          redBalls.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: 10,
+            color: "#ef4444",
+            dx: (Math.random() - 0.5) * 2,
+            dy: (Math.random() - 0.5) * 2,
+          });
+        }
+
+        // Initialize blue balls
+        blueBalls.push({
+          x: 100,
+          y: 100,
+          radius: 12,
+          color: "#3b82f6",
+          dx: -1,
+          dy: 1,
+        });
+
+        function drawBall(ball) {
+          ctx.beginPath();
+          ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+          ctx.fillStyle = ball.color;
+          ctx.fill();
+          ctx.closePath();
+        }
+
+        // Store the mouse position
+        let mouseX = 0;
+        let mouseY = 0;
+
+        // Update mouse position on mousemove
+        canvas.addEventListener("mousemove", (event) => {
+          mouseX = event.clientX - canvas.getBoundingClientRect().left;
+          mouseY = event.clientY - canvas.getBoundingClientRect().top;
+        });
+
+        function update() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          // Update red balls
+          for (const redBall of redBalls) {
+            // Repel from mouse
+            redBall.x += redBall.dx;
+            redBall.y += redBall.dy;
+
+            // Apply deceleration to red balls
+            redBall.dx *= redBallDeceleration;
+            redBall.dy *= redBallDeceleration;
+
+            // Repel from canvas boundary
+            if (redBall.x - redBall.radius < edgePadding) {
+              redBall.x = redBall.radius + edgePadding;
+              redBall.dx *= -1;
+            }
+            if (redBall.x + redBall.radius > canvas.width - edgePadding) {
+              redBall.x = canvas.width - redBall.radius - edgePadding;
+              redBall.dx *= -1;
+            }
+            if (redBall.y - redBall.radius < edgePadding) {
+              redBall.y = redBall.radius + edgePadding;
+              redBall.dy *= -1;
+            }
+            if (redBall.y + redBall.radius > canvas.height - edgePadding) {
+              redBall.y = canvas.height - redBall.radius - edgePadding;
+              redBall.dy *= -1;
+            }
+
+            // Limit maximum speed
+            const currentSpeed = Math.sqrt(redBall.dx ** 2 + redBall.dy ** 2);
+            if (currentSpeed > maxRedBallSpeed) {
+              const speedRatio = maxRedBallSpeed / currentSpeed;
+              redBall.dx *= speedRatio * 0.5;
+              redBall.dy *= speedRatio * 0.5;
+            }
+
+            drawBall(redBall);
+          }
+          // Update red balls
+          for (const redBall of redBalls) {
+            const dx = redBall.x - mouseX;
+            const dy = redBall.y - mouseY;
+            const distanceSquared = dx * dx + dy * dy;
+
+            if (distanceSquared < 2500) {
+              redBall.dx += dx * repelForce;
+              redBall.dy += dy * repelForce;
+            }
+            redBall.x += redBall.dx;
+            redBall.y += redBall.dy;
+
+            // Boundary check for red balls
+            if (
+              redBall.x < redBall.radius ||
+              redBall.x > canvas.width - redBall.radius
+            ) {
+              redBall.dx *= -1;
+            }
+            if (
+              redBall.y < redBall.radius ||
+              redBall.y > canvas.height - redBall.radius
+            ) {
+              redBall.dy *= -1;
+            }
+
+            drawBall(redBall);
+          }
+
+          // Update blue balls
+          for (const blueBall of blueBalls) {
+            blueBall.x += blueBall.dx * blueBallSpeed;
+            blueBall.y += blueBall.dy * blueBallSpeed;
+
+            // Boundary check for blue balls
+            if (
+              blueBall.x < blueBall.radius ||
+              blueBall.x > canvas.width - blueBall.radius
+            ) {
+              blueBall.dx *= -1;
+            }
+            if (
+              blueBall.y < blueBall.radius ||
+              blueBall.y > canvas.height - blueBall.radius
+            ) {
+              blueBall.dy *= -1;
+            }
+
+            drawBall(blueBall);
+          }
+
+          // Draw green ball
+          drawBall(greenBall);
+
+          // Collision detection between red and green balls
+          for (const redBall of redBalls) {
+            const distance = Math.sqrt(
+              (redBall.x - greenBall.x) ** 2 + (redBall.y - greenBall.y) ** 2
+            );
+            if (distance < redBall.radius + greenBall.radius) {
+              redBalls.splice(redBalls.indexOf(redBall), 1);
+              blueBallSpeed += blueBallAcceleration; // Increase blue ball speed
+              console.log(blueBallSpeed+=blueBallAcceleration)
+            }
+          }
+
+          // Collision detection between red and blue balls
+          for (const redBall of redBalls) {
+            for (const blueBall of blueBalls) {
+              const distance = Math.sqrt(
+                (redBall.x - blueBall.x) ** 2 + (redBall.y - blueBall.y) ** 2
+              );
+              if (distance < redBall.radius + blueBall.radius) {
+                gameOver(false);
+                return;
+              }
+            }
+          }
+
+          // Check game over condition
+          if (redBalls.length === 0) {
+            return gameOver(true);
+          }
+
+          requestAnimationFrame(update);
+        }
+
+        function gameOver(done) {
+          const retry = localStorage.getItem("retry") || 0;
+          !done && localStorage.setItem("retry", Number(retry) + 1);
+          done && localStorage.setItem("retry", 0);;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.font = "40px monospace";
+          ctx.fillStyle = "#ef4444";
+          ctx.fillText("You lose!", canvas.width / 2 - 100, canvas.height / 2);
+          done && gameDone(retry);
+        }
+        
+        function gameDone(retry){
+            canvas.remove()
+            document.querySelector('button').remove()
+            const main = document.querySelector('main')
+            const h1 = document.createElement('h1')
+            const div = document.createElement('div')
+            h1.innerHTML = `Congrats! after ${retry} attempts.`
+            div.innerHTML = `Here's your <a class="text-blue-500" href="https://youtu.be/s-qNR1hY_8w?t=6">reward!</a>`
+            main.appendChild(h1)
+            main.appendChild(div)
+        }
+
+        update();
+      }
+      init();
+    </script>
+  </body>
+</html>
