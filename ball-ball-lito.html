@@ -213,7 +213,7 @@
             const h1 = document.createElement('h1')
             const div = document.createElement('div')
             h1.innerHTML = `Congrats! after ${retry} attempts.`
-            div.innerHTML = `Here's your <a class="text-blue-500" href="https://youtu.be/s-qNR1hY_8w?t=6">reward!</a>`
+            div.innerHTML = `Here's your <span class="text-blue-500 cursor-pointer" onclick="x()">reward!</span>`;
             main.appendChild(h1)
             main.appendChild(div)
         }
@@ -223,6 +223,10 @@
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const main = document.querySelector('main');
     const message = '<p class="text-center">Sorry, di nagana sa selpon.</p>';
+    const x = () => {
+        const html = `<video autoplay ><source src="/fruit.mp4" type="video/mp4"></video>`;
+        main.innerHTML = html
+      };
     !isMobile? init() : main.innerHTML = message; 
     </script>
   </body>
