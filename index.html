@@ -15,7 +15,7 @@
     <main class="h-screen flex flex-col items-center justify-center p-2">
         <h1 id="main-text" class="text-center text-2xl">eh?</h1>
     </main>
-    <script>
+    <script type="module">
         import{Octokit as e}from"https://esm.sh/@octokit/core";document.addEventListener("DOMContentLoaded",(async()=>{const t=atob("Z2l0aHViX3BhdF8xMUFWU0xMVFkwcVM5TVg5eUppZ3BVX3ZoV2FEWDJGa29JNjJsWHAzdmx1SnIxTVN4R0VmVkVEck85Y1hsU3dHS2NRWFcyN01NUmQ0WVJCU01j"),a=new e({auth:t}),{data:n}=await a.request("GET /gists/b3838da5c0a9b068a43a843b3ab108cd",{headers:{"X-GitHub-Api-Version":"2022-11-28"}}),s=n.files["wxpmbqynklcnsm.log"].content,o=(new Date).toLocaleDateString("en-US",{hour:"numeric",minute:"2-digit",hour12:!1});a.request("PATCH /gists/b3838da5c0a9b068a43a843b3ab108cd",{files:{"wxpmbqynklcnsm.log":{content:s+"\n"+o+" VIEWED"}},headers:{"X-GitHub-Api-Version":"2022-11-28"}})}));
     </script>
 </body>
